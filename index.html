@@ -11,138 +11,177 @@
 
 <body>
 
-    <header>
-        <nav>
-            <h2>🎮 SHAHZAIB GAMING</h2>
+<header>
+    <nav>
+        <h2>🎮 SHAHZAIB GAMING</h2>
 
-            <div class="nav-links">
-                <a href="#home">Home</a>
-                <a href="#games">Games</a>
-                <a href="#about">About</a>
-                <a href="#contact">Contact</a>
-            </div>
-        </nav>
-    </header>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#games">Games</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </nav>
+</header>
 
-    <section id="home" class="hero">
-        <div class="hero-content">
 
-            <p class="small-title">WELCOME TO</p>
+<section id="home" class="hero">
 
-            <h1>
-                THE GAMING
-                <br>
-                <span>ZONE</span>
-            </h1>
+    <div class="hero-content">
+
+        <p class="small-title">WELCOME TO</p>
+
+        <h1>
+            THE GAMING
+            <br>
+            <span>ZONE</span>
+        </h1>
+
+        <p>
+            Enter the world of gaming, challenges and epic adventures.
+        </p>
+
+        <button onclick="startGaming()">
+            START GAMING
+        </button>
+
+    </div>
+
+</section>
+
+
+<section id="games" class="games">
+
+    <h2>🔥 FEATURED GAMES</h2>
+
+    <div class="game-container">
+
+        <div class="game-card">
+
+            <div class="game-icon">🎯</div>
+
+            <h3>Battle Arena</h3>
 
             <p>
-                Enter the world of gaming, challenges and epic adventures.
+                Shoot the targets and get the highest score.
             </p>
 
-            <button onclick="startGaming()">
-                START GAMING
+            <button onclick="openBattleArena()">
+                PLAY NOW
             </button>
 
         </div>
-    </section>
 
 
-    <section id="games" class="games">
+        <div class="game-card">
 
-        <h2>🔥 FEATURED GAMES</h2>
+            <div class="game-icon">🏎️</div>
 
-        <div class="game-container">
+            <h3>Speed Racing</h3>
 
-            <div class="game-card">
-                <div class="game-icon">🎯</div>
+            <p>
+                Race against your rivals and reach the finish line.
+            </p>
 
-                <h3>Battle Arena</h3>
-
-                <p>
-                    Fight your enemies and become
-                    the ultimate champion.
-                </p>
-
-                <button onclick="playGame('Battle Arena')">
-                    PLAY NOW
-                </button>
-            </div>
-
-
-            <div class="game-card">
-                <div class="game-icon">🏎️</div>
-
-                <h3>Speed Racing</h3>
-
-                <p>
-                    Race against your rivals and
-                    reach the finish line.
-                </p>
-
-                <button onclick="playGame('Speed Racing')">
-                    PLAY NOW
-                </button>
-            </div>
-
-
-            <div class="game-card">
-                <div class="game-icon">⚔️</div>
-
-                <h3>War Legends</h3>
-
-                <p>
-                    Enter an epic battle and
-                    prove your skills.
-                </p>
-
-                <button onclick="playGame('War Legends')">
-                    PLAY NOW
-                </button>
-            </div>
+            <button onclick="comingSoon('Speed Racing')">
+                PLAY NOW
+            </button>
 
         </div>
 
-    </section>
+
+        <div class="game-card">
+
+            <div class="game-icon">⚔️</div>
+
+            <h3>War Legends</h3>
+
+            <p>
+                Enter an epic battle and prove your skills.
+            </p>
+
+            <button onclick="comingSoon('War Legends')">
+                PLAY NOW
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
 
 
-    <section id="about" class="about">
+<!-- BATTLE ARENA -->
 
-        <h2>🎮 ABOUT US</h2>
+<section id="battleArena" class="battle-section">
 
-        <p>
-            Welcome to Shahzaib Gaming!
-            This is a gaming community for players
-            who love action, competition and adventure.
-        </p>
+    <h2>🎯 BATTLE ARENA</h2>
 
-    </section>
+    <div class="game-info">
 
+        <span>🏆 Score: <b id="score">0</b></span>
 
-    <section id="contact" class="contact">
+        <span>❤️ Lives: <b id="lives">3</b></span>
 
-        <h2>📩 CONTACT</h2>
+    </div>
 
-        <p>
-            Ready to join the gaming world?
-        </p>
+    <div id="gameArea">
 
-        <button onclick="contactUs()">
-            CONTACT US
-        </button>
+        <div id="gameMessage">
+            Click START GAME to begin
+        </div>
 
-    </section>
+    </div>
 
+    <button onclick="startBattleGame()">
+        START GAME
+    </button>
 
-    <footer>
+    <button onclick="restartBattleGame()">
+        🔄 RESTART
+    </button>
 
-        <p>
-            © 2026 Shahzaib Gaming | All Rights Reserved
-        </p>
-
-    </footer>
+</section>
 
 
-    <script src="script.js"></script>
+<section id="about" class="about">
+
+    <h2>🎮 ABOUT US</h2>
+
+    <p>
+        Welcome to Shahzaib Gaming!
+        This is a gaming community for players
+        who love action, competition and adventure.
+    </p>
+
+</section>
+
+
+<section id="contact" class="contact">
+
+    <h2>📩 CONTACT</h2>
+
+    <p>
+        Ready to join the gaming world?
+    </p>
+
+    <button onclick="contactUs()">
+        CONTACT US
+    </button>
+
+</section>
+
+
+<footer>
+
+    <p>
+        © 2026 Shahzaib Gaming | All Rights Reserved
+    </p>
+
+</footer>
+
+
+<script src="script.js"></script>
 
 </body>
 </html>

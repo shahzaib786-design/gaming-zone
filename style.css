@@ -1,187 +1,157 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+let score = 0;
+let lives = 3;
+let gameRunning = false;
+let targetInterval;
+
+
+function startGaming() {
+
+    document.getElementById("games").scrollIntoView({
+        behavior: "smooth"
+    });
+
 }
 
-html {
-    scroll-behavior: smooth;
+
+function openBattleArena() {
+
+    document.getElementById("battleArena").scrollIntoView({
+        behavior: "smooth"
+    });
+
 }
 
-body {
-    font-family: Arial, sans-serif;
-    background: #080812;
-    color: white;
+
+function startBattleGame() {
+
+    score = 0;
+    lives = 3;
+    gameRunning = true;
+
+    document.getElementById("score").textContent = score;
+    document.getElementById("lives").textContent = lives;
+
+    const gameArea = document.getElementById("gameArea");
+
+    gameArea.innerHTML = "";
+
+    createTarget();
+
+    clearInterval(targetInterval);
+
+    targetInterval = setInterval(() => {
+
+        if (gameRunning) {
+            createTarget();
+        }
+
+    }, 1200);
+
 }
 
-header {
-    background: #101020;
-    padding: 20px 8%;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+
+function createTarget() {
+
+    if (!gameRunning) return;
+
+    const gameArea = document.getElementById("gameArea");
+
+    const target = document.createElement("div");
+
+    target.classList.add("target");
+
+    const maxX = gameArea.clientWidth - 60;
+    const maxY = gameArea.clientHeight - 60;
+
+    target.style.left =
+        Math.random() * maxX + "px";
+
+    target.style.top =
+        Math.random() * maxY + "px";
+
+
+    target.onclick = function(event) {
+
+        event.stopPropagation();
+
+        score++;
+
+        document.getElementById("score").textContent = score;
+
+        target.remove();
+
+    };
+
+
+    gameArea.appendChild(target);
+
 }
 
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
 
-nav h2 {
-    letter-spacing: 2px;
-}
+document.getElementById("gameArea").onclick = function() {
 
-.nav-links {
-    display: flex;
-    gap: 25px;
-}
+    if (!gameRunning) return;
 
-.nav-links a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
+    lives--;
 
-.nav-links a:hover {
-    color: #00ffcc;
-}
+    document.getElementById("lives").textContent = lives;
 
-.hero {
-    min-height: 90vh;
-    display: flex;
-    align-items: center;
-    padding: 80px 10%;
-    background: linear-gradient(135deg, #09091a, #171738);
-}
+    if (lives <= 0) {
 
-.hero-content {
-    max-width: 700px;
-}
+        gameOver();
 
-.small-title {
-    color: #00ffcc;
-    font-weight: bold;
-    letter-spacing: 4px;
-}
-
-.hero h1 {
-    font-size: 70px;
-    line-height: 1;
-    margin: 20px 0;
-}
-
-.hero h1 span {
-    color: #00ffcc;
-}
-
-.hero p {
-    font-size: 18px;
-    margin-bottom: 30px;
-    color: #cccccc;
-}
-
-button {
-    background: #00ffcc;
-    border: none;
-    padding: 14px 25px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-button:hover {
-    transform: scale(1.05);
-}
-
-.games {
-    padding: 80px 8%;
-    text-align: center;
-}
-
-.games h2,
-.about h2,
-.contact h2 {
-    margin-bottom: 40px;
-    font-size: 35px;
-}
-
-.game-container {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    flex-wrap: wrap;
-}
-
-.game-card {
-    background: #141426;
-    width: 300px;
-    padding: 30px;
-    border-radius: 15px;
-    transition: 0.3s;
-}
-
-.game-card:hover {
-    transform: translateY(-10px);
-}
-
-.game-icon {
-    font-size: 60px;
-    margin-bottom: 20px;
-}
-
-.game-card h3 {
-    font-size: 25px;
-    margin-bottom: 15px;
-}
-
-.game-card p {
-    color: #bbbbbb;
-    line-height: 1.6;
-    margin-bottom: 20px;
-}
-
-.about,
-.contact {
-    padding: 80px 15%;
-    text-align: center;
-    background: #101020;
-}
-
-.about p,
-.contact p {
-    color: #cccccc;
-    font-size: 18px;
-    line-height: 1.7;
-}
-
-.contact {
-    background: #080812;
-}
-
-.contact button {
-    margin-top: 25px;
-}
-
-footer {
-    text-align: center;
-    padding: 25px;
-    background: #050509;
-    color: #888888;
-}
-
-@media (max-width: 700px) {
-
-    nav {
-        flex-direction: column;
-        gap: 15px;
     }
 
-    .nav-links {
-        gap: 12px;
-    }
+};
 
-    .hero h1 {
-        font-size: 50px;
-    }
+
+function gameOver() {
+
+    gameRunning = false;
+
+    clearInterval(targetInterval);
+
+    const gameArea = document.getElementById("gameArea");
+
+    gameArea.innerHTML = `
+        <div id="gameMessage">
+            🎮 GAME OVER<br><br>
+            🏆 Your Score: ${score}
+        </div>
+    `;
+
+}
+
+
+function restartBattleGame() {
+
+    clearInterval(targetInterval);
+
+    score = 0;
+    lives = 3;
+    gameRunning = false;
+
+    document.getElementById("score").textContent = score;
+    document.getElementById("lives").textContent = lives;
+
+    document.getElementById("gameArea").innerHTML = `
+        <div id="gameMessage">
+            Click START GAME to begin
+        </div>
+    `;
+
+}
+
+
+function comingSoon(gameName) {
+
+    alert("🎮 " + gameName + " is coming soon!");
+
+}
+
+
+function contactUs() {
+
+    alert("📩 Thanks for contacting Shahzaib Gaming!");
+
 }
