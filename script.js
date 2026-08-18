@@ -5,18 +5,37 @@ let lives = 3;
 let gameLoop = null;
 let keys = {};
 
+let battleTarget = null;
+let playerCar = null;
+let trafficCars = [];
+let racingRocks = [];
+
+let warPlayer = null;
+let warGun = null;
+let warEnemies = [];
+let warBullets = [];
+
+let mouseX = 0;
+let mouseY = 0;
+
 const gameScreen = document.getElementById("game-screen");
 const gameArea = document.getElementById("game-area");
 
-document.addEventListener("keydown", e => {
+document.addEventListener("keydown", (e) => {
     keys[e.key.toLowerCase()] = true;
 
-    if (e.key === " " || e.key === "ArrowLeft" || e.key === "ArrowRight") {
+    if (
+        e.key === " " ||
+        e.key === "ArrowLeft" ||
+        e.key === "ArrowRight" ||
+        e.key === "ArrowUp" ||
+        e.key === "ArrowDown"
+    ) {
         e.preventDefault();
     }
 });
 
-document.addEventListener("keyup", e => {
+document.addEventListener("keyup", (e) => {
     keys[e.key.toLowerCase()] = false;
 });
 
@@ -28,6 +47,7 @@ function goToGames() {
 
 function openGame(game) {
     currentGame = game;
+
     gameScreen.classList.add("active");
 
     const titles = {
@@ -37,13 +57,16 @@ function openGame(game) {
     };
 
     const instructions = {
-        battle: "Move the mouse to aim. Click to shoot the target.",
-        racing: "Use A/D or ←/→ to move. Avoid cars and rocks.",
-        war: "Move with A/D or ←/→. Move mouse to aim and click to shoot."
+        battle: "Move your mouse to aim and click the target.",
+        racing: "Use A/D or ←/→ to move your car. Avoid traffic!",
+        war: "Move with A/D or ←/→. Aim with mouse and click to shoot."
     };
 
-    document.getElementById("game-title").textContent = titles[game];
-    document.getElementById("game-instructions").textContent = instructions[game];
+    document.getElementById("game-title").textContent =
+        titles[game] || "🎮 GAME";
+
+    document.getElementById("game-instructions").textContent =
+        instructions[game] || "";
 
     gameScreen.scrollIntoView({
         behavior: "smooth"
@@ -57,7 +80,7 @@ function closeGame() {
 
     gameArea.innerHTML = `
         <div id="game-message">
-            🎮 Choose a game and press START GAME
+            🎮 Choose a game and press <strong>START GAME</strong>
         </div>
     `;
 
@@ -72,11 +95,20 @@ function startGame() {
     lives = 3;
 
     updateStats();
+
     gameArea.innerHTML = "";
 
-    if (currentGame === "battle") startBattle();
-    if (currentGame === "racing") startRacing();
-    if (currentGame === "war") startWar();
+    if (currentGame === "battle") {
+        startBattle();
+    }
+
+    if (currentGame === "racing") {
+        startRacing();
+    }
+
+    if (currentGame === "war") {
+        startWar();
+    }
 }
 
 function restartGame() {
@@ -93,6 +125,16 @@ function stopGame() {
 
     gameArea.onmousemove = null;
     gameArea.onclick = null;
+
+    battleTarget = null;
+    playerCar = null;
+    warPlayer = null;
+    warGun = null;
+
+    trafficCars = [];
+    racingRocks = [];
+    warEnemies = [];
+    warBullets = [];
 }
 
 function updateStats() {
@@ -104,11 +146,11 @@ function updateStats() {
    BATTLE ARENA
 ================================= */
 
-let battleTarget;
-
 function startBattle() {
+
     gameArea.innerHTML = `
         <div class="battle-arena">
+
             <div class="aim"></div>
 
             <div class="gun">
@@ -118,6 +160,7 @@ function startBattle() {
             <div class="target">
                 🎯
             </div>
+
         </div>
     `;
 
@@ -125,48 +168,72 @@ function startBattle() {
 
     moveBattleTarget();
 
-    gameArea.onmousemove = e => {
-        const rect = gameArea.getBoundingClientRect();
+    gameArea.onmousemove = function (e) {
 
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        const aim = gameArea.querySelector(".aim");
-        const gun = gameArea.querySelector(".gun");
-
-        aim.style.left = x + "px";
-        aim.style.top = y + "px";
-
-        const gunX = 65;
-        const gunY = gameArea.clientHeight - 45;
-
-        const angle =
-            Math.atan2(y - gunY, x - gunX) * 180 / Math.PI;
-
-        gun.style.transform = `rotate(${angle}deg)`;
-    };
-
-    gameArea.onclick = e => {
         if (!gameRunning) return;
 
-        if (e.target === battleTarget) {
+        const rect = gameArea.getBoundingClientRect();
+
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+
+        const aim =
+            gameArea.querySelector(".aim");
+
+        const gun =
+            gameArea.querySelector(".gun");
+
+        aim.style.left = mouseX + "px";
+        aim.style.top = mouseY + "px";
+
+        const gunX = 70;
+        const gunY =
+            gameArea.clientHeight - 50;
+
+        const angle =
+            Math.atan2(
+                mouseY - gunY,
+                mouseX - gunX
+            ) * 180 / Math.PI;
+
+        gun.style.transform =
+            `rotate(${angle}deg)`;
+    };
+
+    gameArea.onclick = function (e) {
+
+        if (!gameRunning) return;
+
+        if (
+            e.target === battleTarget ||
+            e.target.closest(".target")
+        ) {
+
             score += 10;
+
             updateStats();
 
-            battleTarget.style.transform = "scale(1.4)";
+            battleTarget.style.transform =
+                "scale(1.35)";
 
             setTimeout(() => {
-                if (gameRunning) {
-                    battleTarget.style.transform = "scale(1)";
-                    moveBattleTarget();
-                }
+
+                if (!gameRunning) return;
+
+                battleTarget.style.transform =
+                    "scale(1)";
+
+                moveBattleTarget();
+
             }, 120);
 
         } else if (
             !e.target.classList.contains("aim") &&
             !e.target.classList.contains("gun")
         ) {
+
             lives--;
+
             updateStats();
 
             if (lives <= 0) {
@@ -177,34 +244,42 @@ function startBattle() {
 }
 
 function moveBattleTarget() {
-    if (!battleTarget) return;
 
-    const maxX = Math.max(
-        10,
-        gameArea.clientWidth - 80
-    );
+    if (!battleTarget || !gameRunning) return;
 
-    const maxY = Math.max(
-        80,
-        gameArea.clientHeight - 130
-    );
+    const width =
+        gameArea.clientWidth;
+
+    const height =
+        gameArea.clientHeight;
+
+    const targetSize = 65;
+
+    const x =
+        Math.random() *
+        Math.max(1, width - targetSize);
+
+    const y =
+        50 +
+        Math.random() *
+        Math.max(
+            1,
+            height - 160
+        );
 
     battleTarget.style.left =
-        Math.random() * maxX + "px";
+        x + "px";
 
     battleTarget.style.top =
-        40 + Math.random() * maxY + "px";
+        y + "px";
 }
 
 /* =================================
    SPEED RACING
 ================================= */
 
-let playerCar;
-let trafficCars = [];
-let racingRocks = [];
-
 function startRacing() {
+
     trafficCars = [];
     racingRocks = [];
 
@@ -212,9 +287,11 @@ function startRacing() {
         <div class="race-game">
 
             <div class="road">
+
                 <div class="road-mark mark1"></div>
                 <div class="road-mark mark2"></div>
                 <div class="road-mark mark3"></div>
+
             </div>
 
             <div class="player-car">
@@ -225,37 +302,58 @@ function startRacing() {
     `;
 
     playerCar =
-        gameArea.querySelector(".player-car");
+        gameArea.querySelector(
+            ".player-car"
+        );
 
     playerCar.style.left = "50%";
 
     gameLoop =
-        setInterval(racingLoop, 30);
+        setInterval(
+            racingLoop,
+            30
+        );
 }
 
 function racingLoop() {
-    if (!gameRunning) return;
+
+    if (!gameRunning || !playerCar) {
+        return;
+    }
 
     let left =
-        parseFloat(playerCar.style.left) || 50;
+        parseFloat(
+            playerCar.style.left
+        ) || 50;
 
-    if (keys["a"] || keys["arrowleft"]) {
-        left -= 1.3;
+    if (
+        keys["a"] ||
+        keys["arrowleft"]
+    ) {
+        left -= 1.6;
     }
 
-    if (keys["d"] || keys["arrowright"]) {
-        left += 1.3;
+    if (
+        keys["d"] ||
+        keys["arrowright"]
+    ) {
+        left += 1.6;
     }
 
-    left = Math.max(27, Math.min(73, left));
+    left =
+        Math.max(
+            27,
+            Math.min(73, left)
+        );
 
-    playerCar.style.left = left + "%";
+    playerCar.style.left =
+        left + "%";
 
-    if (Math.random() < 0.025) {
+    if (Math.random() < 0.035) {
         createTrafficCar();
     }
 
-    if (Math.random() < 0.012) {
+    if (Math.random() < 0.01) {
         createRock();
     }
 
@@ -264,117 +362,205 @@ function racingLoop() {
 }
 
 function createTrafficCar() {
-    const car = document.createElement("div");
 
-    car.className = "traffic-car";
+    if (!gameRunning) return;
+
+    const car =
+        document.createElement("div");
+
+    car.className =
+        "traffic-car";
+
     car.textContent =
-        Math.random() > 0.5 ? "🚗" : "🚙";
+        Math.random() > 0.5
+            ? "🚗"
+            : "🚙";
 
     car.style.left =
-        (27 + Math.random() * 46) + "%";
+        (27 + Math.random() * 46) +
+        "%";
 
-    car.style.top = "-70px";
+    car.style.top =
+        "-70px";
 
     gameArea.appendChild(car);
+
     trafficCars.push(car);
 }
 
 function createRock() {
-    const rock = document.createElement("div");
 
-    rock.className = "rock";
-    rock.textContent = "🪨";
+    if (!gameRunning) return;
+
+    const rock =
+        document.createElement("div");
+
+    rock.className =
+        "rock";
+
+    rock.textContent =
+        "🪨";
 
     rock.style.left =
-        (27 + Math.random() * 46) + "%";
+        (27 + Math.random() * 46) +
+        "%";
 
-    rock.style.top = "-60px";
+    rock.style.top =
+        "-60px";
 
     gameArea.appendChild(rock);
+
     racingRocks.push(rock);
 }
 
 function moveTraffic() {
-    trafficCars.forEach((car, index) => {
+
+    for (
+        let i = trafficCars.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const car =
+            trafficCars[i];
+
+        if (!car.isConnected) {
+            trafficCars.splice(i, 1);
+            continue;
+        }
 
         let top =
-            parseFloat(car.style.top);
+            parseFloat(
+                car.style.top
+            ) || 0;
 
         top += 5;
 
-        car.style.top = top + "px";
+        car.style.top =
+            top + "px";
 
-        if (checkCollision(playerCar, car)) {
+        if (
+            checkCollision(
+                playerCar,
+                car
+            )
+        ) {
 
             car.remove();
-            trafficCars.splice(index, 1);
+
+            trafficCars.splice(
+                i,
+                1
+            );
 
             lives--;
+
             updateStats();
 
             if (lives <= 0) {
                 gameOver();
+                return;
             }
 
-            return;
+            continue;
         }
 
-        if (top > gameArea.clientHeight) {
+        if (
+            top >
+            gameArea.clientHeight + 80
+        ) {
 
             car.remove();
-            trafficCars.splice(index, 1);
+
+            trafficCars.splice(
+                i,
+                1
+            );
 
             score += 5;
+
             updateStats();
         }
-    });
+    }
 }
 
 function moveRocks() {
-    racingRocks.forEach((rock, index) => {
+
+    for (
+        let i = racingRocks.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const rock =
+            racingRocks[i];
+
+        if (!rock.isConnected) {
+            racingRocks.splice(i, 1);
+            continue;
+        }
 
         let top =
-            parseFloat(rock.style.top);
+            parseFloat(
+                rock.style.top
+            ) || 0;
 
         top += 6;
 
-        rock.style.top = top + "px";
+        rock.style.top =
+            top + "px";
 
-        if (checkCollision(playerCar, rock)) {
+        if (
+            checkCollision(
+                playerCar,
+                rock
+            )
+        ) {
 
             rock.remove();
-            racingRocks.splice(index, 1);
+
+            racingRocks.splice(
+                i,
+                1
+            );
 
             lives--;
+
             updateStats();
 
             if (lives <= 0) {
                 gameOver();
+                return;
             }
 
-            return;
+            continue;
         }
 
-        if (top > gameArea.clientHeight) {
+        if (
+            top >
+            gameArea.clientHeight + 80
+        ) {
 
             rock.remove();
-            racingRocks.splice(index, 1);
+
+            racingRocks.splice(
+                i,
+                1
+            );
 
             score += 3;
+
             updateStats();
         }
-    });
+    }
 }
 
 /* =================================
    WAR LEGENDS
 ================================= */
 
-let warPlayer;
-let warEnemies = [];
-let warBullets = [];
-
 function startWar() {
+
     warEnemies = [];
     warBullets = [];
 
@@ -395,102 +581,197 @@ function startWar() {
     `;
 
     warPlayer =
-        gameArea.querySelector(".war-player");
+        gameArea.querySelector(
+            ".war-player"
+        );
+
+    warGun =
+        gameArea.querySelector(
+            ".war-gun"
+        );
 
     warPlayer.style.left = "50%";
 
-    gameArea.onmousemove = e => {
+    gameArea.onmousemove =
+        function (e) {
 
-        const rect =
-            gameArea.getBoundingClientRect();
+            if (!gameRunning) return;
 
-        const x =
-            e.clientX - rect.left;
+            const rect =
+                gameArea.getBoundingClientRect();
 
-        const y =
-            e.clientY - rect.top;
+            mouseX =
+                e.clientX - rect.left;
 
-        const crosshair =
-            gameArea.querySelector(".war-crosshair");
+            mouseY =
+                e.clientY - rect.top;
 
-        crosshair.style.left = x + "px";
-        crosshair.style.top = y + "px";
+            const crosshair =
+                gameArea.querySelector(
+                    ".war-crosshair"
+                );
 
-        const px =
-            warPlayer.offsetLeft + 25;
+            crosshair.style.left =
+                mouseX + "px";
 
-        const py =
-            warPlayer.offsetTop + 25;
+            crosshair.style.top =
+                mouseY + "px";
 
-        const angle =
-            Math.atan2(y - py, x - px);
+            updateWarGun();
+        };
 
-        const gun =
-            gameArea.querySelector(".war-gun");
+    gameArea.onclick =
+        function (e) {
 
-        gun.style.left =
-            (warPlayer.offsetLeft + 20) + "px";
+            if (!gameRunning) return;
 
-        gun.style.top =
-            (warPlayer.offsetTop - 5) + "px";
-
-        gun.style.transform =
-            `rotate(${angle}rad)`;
-    };
-
-    gameArea.onclick = e => {
-
-        if (!gameRunning) return;
-
-        if (
-            e.target.classList.contains("war-crosshair") ||
-            e.target.closest(".war-game")
-        ) {
-            shootWar();
-        }
-    };
+            if (
+                e.target.closest(
+                    ".war-game"
+                )
+            ) {
+                shootWar();
+            }
+        };
 
     gameLoop =
-        setInterval(warLoop, 30);
+        setInterval(
+            warLoop,
+            30
+        );
+}
+
+function updateWarGun() {
+
+    if (!warPlayer || !warGun) {
+        return;
+    }
+
+    const px =
+        warPlayer.offsetLeft + 25;
+
+    const py =
+        warPlayer.offsetTop + 25;
+
+    const angle =
+        Math.atan2(
+            mouseY - py,
+            mouseX - px
+        );
+
+    warGun.style.left =
+        (warPlayer.offsetLeft + 20) +
+        "px";
+
+    warGun.style.top =
+        (warPlayer.offsetTop - 5) +
+        "px";
+
+    warGun.style.transform =
+        `rotate(${angle}rad)`;
+
+    warGun.style.transformOrigin =
+        "15px 15px";
 }
 
 function shootWar() {
 
+    if (
+        !gameRunning ||
+        !warPlayer
+    ) {
+        return;
+    }
+
+    const startX =
+        warPlayer.offsetLeft + 25;
+
+    const startY =
+        warPlayer.offsetTop + 20;
+
+    const dx =
+        mouseX - startX;
+
+    const dy =
+        mouseY - startY;
+
+    const distance =
+        Math.sqrt(
+            dx * dx +
+            dy * dy
+        );
+
+    if (distance < 1) return;
+
     const bullet =
         document.createElement("div");
 
-    bullet.className = "bullet";
+    bullet.className =
+        "bullet";
 
     bullet.style.left =
-        (warPlayer.offsetLeft + 25) + "px";
+        startX + "px";
 
     bullet.style.top =
-        (warPlayer.offsetTop - 10) + "px";
+        startY + "px";
 
-    gameArea.appendChild(bullet);
+    bullet.dataset.vx =
+        dx / distance * 12;
 
-    warBullets.push(bullet);
+    bullet.dataset.vy =
+        dy / distance * 12;
+
+    gameArea.appendChild(
+        bullet
+    );
+
+    warBullets.push(
+        bullet
+    );
 }
 
 function warLoop() {
-    if (!gameRunning) return;
+
+    if (
+        !gameRunning ||
+        !warPlayer
+    ) {
+        return;
+    }
 
     let left =
-        parseFloat(warPlayer.style.left) || 50;
+        parseFloat(
+            warPlayer.style.left
+        ) || 50;
 
-    if (keys["a"] || keys["arrowleft"]) {
-        left -= 1;
+    if (
+        keys["a"] ||
+        keys["arrowleft"]
+    ) {
+        left -= 1.2;
     }
 
-    if (keys["d"] || keys["arrowright"]) {
-        left += 1;
+    if (
+        keys["d"] ||
+        keys["arrowright"]
+    ) {
+        left += 1.2;
     }
 
-    left = Math.max(5, Math.min(90, left));
+    left =
+        Math.max(
+            5,
+            Math.min(90, left)
+        );
 
-    warPlayer.style.left = left + "%";
+    warPlayer.style.left =
+        left + "%";
 
-    if (Math.random() < 0.025) {
+    updateWarGun();
+
+    if (
+        Math.random() < 0.025
+    ) {
         createWarEnemy();
     }
 
@@ -500,97 +781,212 @@ function warLoop() {
 
 function createWarEnemy() {
 
+    if (!gameRunning) return;
+
     const enemy =
         document.createElement("div");
 
-    enemy.className = "war-enemy";
-    enemy.textContent = "👾";
+    enemy.className =
+        "war-enemy";
+
+    enemy.textContent =
+        "👾";
 
     enemy.style.left =
-        (5 + Math.random() * 85) + "%";
+        (5 + Math.random() * 85) +
+        "%";
 
-    enemy.style.top = "-60px";
+    enemy.style.top =
+        "-60px";
 
-    gameArea.appendChild(enemy);
+    gameArea.appendChild(
+        enemy
+    );
 
-    warEnemies.push(enemy);
+    warEnemies.push(
+        enemy
+    );
 }
 
 function moveWarBullets() {
 
-    warBullets.forEach((bullet, bi) => {
+    for (
+        let i = warBullets.length - 1;
+        i >= 0;
+        i--
+    ) {
 
-        let top =
-            parseFloat(bullet.style.top);
+        const bullet =
+            warBullets[i];
 
-        top -= 10;
+        if (!bullet.isConnected) {
+            warBullets.splice(i, 1);
+            continue;
+        }
+
+        let x =
+            parseFloat(
+                bullet.style.left
+            ) || 0;
+
+        let y =
+            parseFloat(
+                bullet.style.top
+            ) || 0;
+
+        const vx =
+            parseFloat(
+                bullet.dataset.vx
+            ) || 0;
+
+        const vy =
+            parseFloat(
+                bullet.dataset.vy
+            ) || 0;
+
+        x += vx;
+        y += vy;
+
+        bullet.style.left =
+            x + "px";
 
         bullet.style.top =
-            top + "px";
+            y + "px";
 
-        warEnemies.forEach((enemy, ei) => {
+        let hit = false;
 
-            if (checkCollision(bullet, enemy)) {
+        for (
+            let j = warEnemies.length - 1;
+            j >= 0;
+            j--
+        ) {
+
+            const enemy =
+                warEnemies[j];
+
+            if (
+                checkCollision(
+                    bullet,
+                    enemy
+                )
+            ) {
 
                 bullet.remove();
                 enemy.remove();
 
-                warBullets.splice(bi, 1);
-                warEnemies.splice(ei, 1);
+                warBullets.splice(
+                    i,
+                    1
+                );
+
+                warEnemies.splice(
+                    j,
+                    1
+                );
 
                 score += 10;
-                updateStats();
-            }
-        });
 
-        if (top < -30) {
+                updateStats();
+
+                hit = true;
+
+                break;
+            }
+        }
+
+        if (hit) continue;
+
+        if (
+            x < -50 ||
+            x > gameArea.clientWidth + 50 ||
+            y < -50 ||
+            y > gameArea.clientHeight + 50
+        ) {
 
             bullet.remove();
-            warBullets.splice(bi, 1);
+
+            warBullets.splice(
+                i,
+                1
+            );
         }
-    });
+    }
 }
 
 function moveWarEnemies() {
 
-    warEnemies.forEach((enemy, index) => {
+    for (
+        let i = warEnemies.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const enemy =
+            warEnemies[i];
+
+        if (!enemy.isConnected) {
+            warEnemies.splice(i, 1);
+            continue;
+        }
 
         let top =
-            parseFloat(enemy.style.top);
+            parseFloat(
+                enemy.style.top
+            ) || 0;
 
         top += 3;
 
         enemy.style.top =
             top + "px";
 
-        if (checkCollision(warPlayer, enemy)) {
+        if (
+            checkCollision(
+                warPlayer,
+                enemy
+            )
+        ) {
 
             enemy.remove();
-            warEnemies.splice(index, 1);
+
+            warEnemies.splice(
+                i,
+                1
+            );
 
             lives--;
+
             updateStats();
 
             if (lives <= 0) {
                 gameOver();
+                return;
             }
 
-            return;
+            continue;
         }
 
-        if (top > gameArea.clientHeight) {
+        if (
+            top >
+            gameArea.clientHeight
+        ) {
 
             enemy.remove();
-            warEnemies.splice(index, 1);
+
+            warEnemies.splice(
+                i,
+                1
+            );
 
             lives--;
+
             updateStats();
 
             if (lives <= 0) {
                 gameOver();
+                return;
             }
         }
-    });
+    }
 }
 
 /* =================================
@@ -599,7 +995,9 @@ function moveWarEnemies() {
 
 function checkCollision(a, b) {
 
-    if (!a || !b) return false;
+    if (!a || !b) {
+        return false;
+    }
 
     const r1 =
         a.getBoundingClientRect();
@@ -623,9 +1021,13 @@ function gameOver() {
 
     gameRunning = false;
 
-    clearInterval(gameLoop);
+    if (gameLoop) {
+        clearInterval(gameLoop);
+        gameLoop = null;
+    }
 
-    gameLoop = null;
+    gameArea.onmousemove = null;
+    gameArea.onclick = null;
 
     gameArea.innerHTML = `
         <div id="game-message">
