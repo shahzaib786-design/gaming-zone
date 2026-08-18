@@ -14,9 +14,8 @@ body {
     color: white;
 }
 
-
 /* =========================
-   NAVIGATION
+   HEADER
 ========================= */
 
 header {
@@ -24,8 +23,9 @@ header {
     top: 0;
     z-index: 1000;
     padding: 20px 8%;
-    background: rgba(10, 10, 20, 0.95);
+    background: rgba(5, 5, 12, 0.96);
     backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 255, 204, 0.15);
 }
 
 nav {
@@ -54,9 +54,32 @@ nav h2 {
     color: #00ffcc;
 }
 
+/* =========================
+   BUTTONS
+========================= */
+
+button,
+.email-button {
+    background: #00ffcc;
+    color: #050509;
+    border: none;
+    border-radius: 7px;
+    padding: 14px 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.25s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+button:hover,
+.email-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px #00ffcc;
+}
 
 /* =========================
-   HERO
+   HOME
 ========================= */
 
 .hero {
@@ -64,7 +87,6 @@ nav h2 {
     display: flex;
     align-items: center;
     padding: 80px 10%;
-
     background:
         radial-gradient(
             circle at 75% 40%,
@@ -96,36 +118,10 @@ nav h2 {
 }
 
 .hero p {
-    color: #cccccc;
+    color: #ccc;
     font-size: 19px;
     margin-bottom: 30px;
 }
-
-
-/* =========================
-   BUTTONS
-========================= */
-
-button {
-    background: #00ffcc;
-    color: #050509;
-
-    border: none;
-    border-radius: 6px;
-
-    padding: 14px 25px;
-
-    font-weight: bold;
-    cursor: pointer;
-
-    transition: 0.25s;
-}
-
-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 0 25px #00ffcc;
-}
-
 
 /* =========================
    GAMES
@@ -137,7 +133,9 @@ button:hover {
     background: #080812;
 }
 
-.games h2 {
+.games h2,
+.about h2,
+.contact h2 {
     font-size: 38px;
     margin-bottom: 45px;
 }
@@ -151,27 +149,20 @@ button:hover {
 
 .game-card {
     width: 300px;
-
     padding: 30px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #161626,
-            #0d0d17
-        );
-
+    background: linear-gradient(
+        145deg,
+        #161626,
+        #0d0d17
+    );
     border: 1px solid #29293c;
     border-radius: 15px;
-
     transition: 0.3s;
 }
 
 .game-card:hover {
     transform: translateY(-10px);
-
     border-color: #00ffcc;
-
     box-shadow:
         0 0 30px rgba(0, 255, 204, 0.2);
 }
@@ -187,11 +178,10 @@ button:hover {
 }
 
 .game-card p {
-    color: #bbbbbb;
+    color: #bbb;
     line-height: 1.6;
     margin-bottom: 25px;
 }
-
 
 /* =========================
    GAME SCREEN
@@ -199,11 +189,8 @@ button:hover {
 
 .game-screen {
     display: none;
-
-    min-height: 700px;
-
-    padding: 80px 5%;
-
+    min-height: 760px;
+    padding: 70px 5%;
     text-align: center;
 
     background:
@@ -219,22 +206,17 @@ button:hover {
 }
 
 .game-header {
-    max-width: 900px;
-
-    margin: 0 auto 20px;
+    max-width: 950px;
+    margin: 0 auto 12px;
 
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
     gap: 20px;
 }
 
 .game-header h2 {
     color: #00ffcc;
-
     font-size: 36px;
 }
 
@@ -243,25 +225,16 @@ button:hover {
     color: white;
 }
 
-#game-instructions {
-    color: #bbbbbb;
-    margin-bottom: 20px;
+.game-screen > p {
+    color: #bbb;
+    margin-bottom: 18px;
 }
-
-
-/* =========================
-   GAME STATS
-========================= */
 
 .game-stats {
     display: flex;
-
     justify-content: center;
-
     gap: 50px;
-
-    margin-bottom: 20px;
-
+    margin-bottom: 15px;
     font-size: 20px;
 }
 
@@ -270,7 +243,6 @@ button:hover {
     font-weight: bold;
 }
 
-
 /* =========================
    GAME AREA
 ========================= */
@@ -278,216 +250,377 @@ button:hover {
 #game-area {
     position: relative;
 
-    width: 100%;
-    max-width: 900px;
-
+    width: min(900px, 100%);
     height: 500px;
 
-    margin: 0 auto 25px;
+    margin: 0 auto 22px;
 
     overflow: hidden;
 
     border: 2px solid #00ffcc;
-
     border-radius: 15px;
 
-    background:
-        radial-gradient(
-            circle,
-            #162b34 1px,
-            transparent 1px
-        );
-
-    background-size: 30px 30px;
+    background: #080b11;
 
     box-shadow:
-        0 0 30px rgba(0, 255, 204, 0.12);
+        0 0 30px rgba(0, 255, 204, 0.15);
+
+    cursor: crosshair;
 }
 
 #game-message {
     position: absolute;
+    inset: 0;
 
-    top: 50%;
-    left: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 
-    transform: translate(-50%, -50%);
-
-    color: #aaaaaa;
-
+    color: #aaa;
     font-size: 22px;
 
-    width: 90%;
-}
+    text-align: center;
 
+    z-index: 50;
+}
 
 /* =========================
-   GAME CONTROLS
+   🎯 BATTLE ARENA
 ========================= */
 
-.game-controls {
-    display: flex;
+.battle-arena {
+    position: absolute;
+    inset: 0;
 
-    justify-content: center;
-
-    gap: 15px;
-
-    margin-bottom: 20px;
+    background:
+        radial-gradient(
+            circle,
+            #14202b,
+            #06090d
+        );
 }
 
-.controls-info {
-    color: #777777;
+.battle-arena::before {
+    content: "";
 
-    font-size: 14px;
+    position: absolute;
+    inset: 0;
 
-    line-height: 1.8;
+    background-image:
+        linear-gradient(
+            rgba(0,255,204,0.08) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(0,255,204,0.08) 1px,
+            transparent 1px
+        );
+
+    background-size: 40px 40px;
 }
-
-
-/* =========================
-   BATTLE TARGET
-========================= */
 
 .target {
     position: absolute;
 
-    width: 60px;
-    height: 60px;
+    width: 65px;
+    height: 65px;
 
     border-radius: 50%;
 
-    background: #00ffcc;
-
-    border: 5px solid #11111b;
+    background:
+        radial-gradient(
+            circle,
+            #00ffcc 0 12%,
+            white 13% 25%,
+            #ff1744 26% 45%,
+            white 46% 60%,
+            #ff1744 61%
+        );
 
     box-shadow:
-        0 0 25px #00ffcc;
+        0 0 25px rgba(255, 23, 68, 0.8);
 
     cursor: crosshair;
 
-    animation: targetAppear 0.2s ease;
+    z-index: 10;
+
+    transition: transform 0.1s;
 }
 
-.target::after {
+.aim {
+    position: absolute;
+
+    width: 45px;
+    height: 45px;
+
+    border: 2px solid #00ffcc;
+    border-radius: 50%;
+
+    transform: translate(-50%, -50%);
+
+    pointer-events: none;
+
+    z-index: 20;
+
+    box-shadow:
+        0 0 15px #00ffcc;
+}
+
+.aim::before,
+.aim::after {
     content: "";
 
     position: absolute;
 
-    width: 18px;
-    height: 18px;
-
-    background: #11111b;
-
-    border-radius: 50%;
-
-    top: 50%;
-    left: 50%;
-
-    transform: translate(-50%, -50%);
+    background: #00ffcc;
 }
 
-@keyframes targetAppear {
+.aim::before {
+    width: 65px;
+    height: 2px;
 
-    from {
-        transform: scale(0);
-    }
-
-    to {
-        transform: scale(1);
-    }
-
+    left: -12px;
+    top: 20px;
 }
 
+.aim::after {
+    height: 65px;
+    width: 2px;
+
+    top: -12px;
+    left: 20px;
+}
+
+.gun {
+    position: absolute;
+
+    bottom: 18px;
+    left: 40px;
+
+    font-size: 65px;
+
+    z-index: 15;
+
+    transform-origin: 70% 50%;
+
+    filter:
+        drop-shadow(0 0 12px #00ffcc);
+}
 
 /* =========================
-   RACING GAME
+   🏎️ RACING
 ========================= */
+
+.race-game {
+    position: absolute;
+    inset: 0;
+
+    overflow: hidden;
+
+    background: #102c18;
+}
 
 .road {
     position: absolute;
 
-    width: 55%;
-
+    left: 22%;
+    width: 56%;
     height: 100%;
 
-    left: 22.5%;
-
-    background: #202025;
+    background:
+        linear-gradient(
+            90deg,
+            #222 0%,
+            #3b3b3b 4%,
+            #202020 4%,
+            #202020 96%,
+            #3b3b3b 96%,
+            #222 100%
+        );
 
     border-left: 5px solid white;
     border-right: 5px solid white;
 }
 
-.player-car,
-.enemy-car {
+.road::after {
+    content: "";
+
     position: absolute;
 
-    width: 45px;
-    height: 70px;
+    left: 50%;
+    top: 0;
 
-    border-radius: 8px;
+    width: 6px;
+    height: 200%;
+
+    transform: translateX(-50%);
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            white 0 55px,
+            transparent 55px 110px
+        );
+
+    animation: roadMove 0.45s linear infinite;
+}
+
+@keyframes roadMove {
+    from {
+        transform: translate(-50%, 0);
+    }
+
+    to {
+        transform: translate(-50%, 110px);
+    }
 }
 
 .player-car {
-    background: #00ffcc;
+    position: absolute;
 
-    box-shadow:
-        0 0 20px #00ffcc;
+    bottom: 25px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    font-size: 55px;
+
+    z-index: 20;
+
+    filter:
+        drop-shadow(0 0 15px #00ffcc);
 }
 
-.enemy-car {
-    background: #ff3b6b;
+.traffic-car {
+    position: absolute;
 
-    box-shadow:
-        0 0 20px #ff3b6b;
+    font-size: 48px;
+
+    z-index: 10;
+
+    filter:
+        drop-shadow(0 0 8px #ff1744);
 }
 
+.rock {
+    position: absolute;
+
+    font-size: 40px;
+
+    z-index: 12;
+
+    filter:
+        drop-shadow(0 0 8px #aaa);
+}
 
 /* =========================
-   WAR GAME
+   ⚔️ WAR LEGENDS
 ========================= */
 
-.player {
+.war-game {
     position: absolute;
+    inset: 0;
 
-    width: 40px;
-    height: 40px;
+    overflow: hidden;
 
-    background: #00ffcc;
-
-    border-radius: 8px;
-
-    box-shadow:
-        0 0 20px #00ffcc;
+    background:
+        radial-gradient(
+            circle at center,
+            #24202d,
+            #08080d
+        );
 }
 
-.enemy {
+.war-game::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        linear-gradient(
+            rgba(255,255,255,0.04) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,0.04) 1px,
+            transparent 1px
+        );
+
+    background-size: 50px 50px;
+}
+
+.war-player {
     position: absolute;
 
-    width: 38px;
-    height: 38px;
+    bottom: 25px;
+    left: 50%;
 
-    background: #ff3b6b;
+    font-size: 50px;
 
-    border-radius: 50%;
+    z-index: 20;
 
-    box-shadow:
-        0 0 15px #ff3b6b;
+    filter:
+        drop-shadow(0 0 15px #00ffcc);
+}
+
+.war-gun {
+    position: absolute;
+
+    bottom: 65px;
+    left: 50%;
+
+    font-size: 38px;
+
+    z-index: 21;
+}
+
+.war-enemy {
+    position: absolute;
+
+    font-size: 48px;
+
+    z-index: 10;
+
+    filter:
+        drop-shadow(0 0 12px #ff1744);
 }
 
 .bullet {
     position: absolute;
 
-    width: 6px;
-    height: 15px;
-
-    background: #ffe066;
+    width: 8px;
+    height: 18px;
 
     border-radius: 5px;
 
+    background: #ffe600;
+
     box-shadow:
-        0 0 10px #ffe066;
+        0 0 15px #ffe600;
+
+    z-index: 15;
 }
 
+/* =========================
+   CONTROLS
+========================= */
+
+.game-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.controls-info {
+    color: #777 !important;
+    font-size: 14px !important;
+    line-height: 1.8;
+}
 
 /* =========================
    ABOUT
@@ -495,25 +628,15 @@ button:hover {
 
 .about {
     padding: 90px 15%;
-
     text-align: center;
-
     background: #101020;
 }
 
-.about h2 {
-    font-size: 38px;
-    margin-bottom: 35px;
-}
-
 .about p {
-    color: #cccccc;
-
+    color: #ccc;
     font-size: 18px;
-
     line-height: 1.8;
 }
-
 
 /* =========================
    CONTACT
@@ -521,25 +644,15 @@ button:hover {
 
 .contact {
     padding: 90px 15%;
-
     text-align: center;
-
     background: #050509;
 }
 
-.contact h2 {
-    font-size: 38px;
-    margin-bottom: 25px;
-}
-
 .contact p {
-    color: #bbbbbb;
-
+    color: #bbb;
     font-size: 18px;
-
     margin-bottom: 25px;
 }
-
 
 /* =========================
    FOOTER
@@ -547,14 +660,10 @@ button:hover {
 
 footer {
     padding: 25px;
-
     text-align: center;
-
-    color: #777777;
-
+    color: #777;
     background: #020204;
 }
-
 
 /* =========================
    MOBILE
@@ -564,19 +673,16 @@ footer {
 
     nav {
         flex-direction: column;
-
         gap: 15px;
     }
 
     .nav-links {
         gap: 12px;
-
         font-size: 14px;
     }
 
     .hero {
         min-height: 80vh;
-
         padding: 70px 7%;
     }
 
@@ -590,16 +696,14 @@ footer {
 
     .game-stats {
         gap: 20px;
-
         font-size: 16px;
     }
 
     #game-area {
-        height: 400px;
+        height: 430px;
     }
 
     .game-controls {
         flex-wrap: wrap;
     }
-
 }
