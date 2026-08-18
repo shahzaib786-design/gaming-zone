@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>My Website</title>
+    <title>Shahzaib Gaming</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -12,19 +12,135 @@
 <body>
 
     <header>
-        <h1>Welcome to My Website</h1>
-        <p>This is my first website!</p>
+        <nav>
+            <h2>🎮 SHAHZAIB GAMING</h2>
+
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#games">Games</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </nav>
     </header>
 
-    <main>
-        <h2>About Me</h2>
+    <section id="home" class="hero">
+        <div class="hero-content">
+
+            <p class="small-title">WELCOME TO</p>
+
+            <h1>
+                THE GAMING
+                <br>
+                <span>ZONE</span>
+            </h1>
+
+            <p>
+                Enter the world of gaming, challenges and epic adventures.
+            </p>
+
+            <button onclick="startGaming()">
+                START GAMING
+            </button>
+
+        </div>
+    </section>
+
+
+    <section id="games" class="games">
+
+        <h2>🔥 FEATURED GAMES</h2>
+
+        <div class="game-container">
+
+            <div class="game-card">
+                <div class="game-icon">🎯</div>
+
+                <h3>Battle Arena</h3>
+
+                <p>
+                    Fight your enemies and become
+                    the ultimate champion.
+                </p>
+
+                <button onclick="playGame('Battle Arena')">
+                    PLAY NOW
+                </button>
+            </div>
+
+
+            <div class="game-card">
+                <div class="game-icon">🏎️</div>
+
+                <h3>Speed Racing</h3>
+
+                <p>
+                    Race against your rivals and
+                    reach the finish line.
+                </p>
+
+                <button onclick="playGame('Speed Racing')">
+                    PLAY NOW
+                </button>
+            </div>
+
+
+            <div class="game-card">
+                <div class="game-icon">⚔️</div>
+
+                <h3>War Legends</h3>
+
+                <p>
+                    Enter an epic battle and
+                    prove your skills.
+                </p>
+
+                <button onclick="playGame('War Legends')">
+                    PLAY NOW
+                </button>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section id="about" class="about">
+
+        <h2>🎮 ABOUT US</h2>
 
         <p>
-            Hello! My name is Ali. I am learning how to build websites.
+            Welcome to Shahzaib Gaming!
+            This is a gaming community for players
+            who love action, competition and adventure.
         </p>
 
-        <button onclick="sayHello()">Click Me</button>
-    </main>
+    </section>
+
+
+    <section id="contact" class="contact">
+
+        <h2>📩 CONTACT</h2>
+
+        <p>
+            Ready to join the gaming world?
+        </p>
+
+        <button onclick="contactUs()">
+            CONTACT US
+        </button>
+
+    </section>
+
+
+    <footer>
+
+        <p>
+            © 2026 Shahzaib Gaming | All Rights Reserved
+        </p>
+
+    </footer>
+
 
     <script src="script.js"></script>
 

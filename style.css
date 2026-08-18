@@ -1,34 +1,187 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    color: #222;
-    margin: 0;
+    background: #080812;
+    color: white;
 }
 
 header {
-    background-color: #2563eb;
-    color: white;
-    text-align: center;
-    padding: 60px 20px;
+    background: #101020;
+    padding: 20px 8%;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-main {
-    max-width: 800px;
-    margin: 40px auto;
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav h2 {
+    letter-spacing: 2px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-links a:hover {
+    color: #00ffcc;
+}
+
+.hero {
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    padding: 80px 10%;
+    background: linear-gradient(135deg, #09091a, #171738);
+}
+
+.hero-content {
+    max-width: 700px;
+}
+
+.small-title {
+    color: #00ffcc;
+    font-weight: bold;
+    letter-spacing: 4px;
+}
+
+.hero h1 {
+    font-size: 70px;
+    line-height: 1;
+    margin: 20px 0;
+}
+
+.hero h1 span {
+    color: #00ffcc;
+}
+
+.hero p {
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: #cccccc;
 }
 
 button {
-    background-color: #2563eb;
-    color: white;
+    background: #00ffcc;
     border: none;
-    padding: 12px 20px;
+    padding: 14px 25px;
     border-radius: 6px;
+    font-weight: bold;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #1d4ed8;
+    transform: scale(1.05);
+}
+
+.games {
+    padding: 80px 8%;
+    text-align: center;
+}
+
+.games h2,
+.about h2,
+.contact h2 {
+    margin-bottom: 40px;
+    font-size: 35px;
+}
+
+.game-container {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.game-card {
+    background: #141426;
+    width: 300px;
+    padding: 30px;
+    border-radius: 15px;
+    transition: 0.3s;
+}
+
+.game-card:hover {
+    transform: translateY(-10px);
+}
+
+.game-icon {
+    font-size: 60px;
+    margin-bottom: 20px;
+}
+
+.game-card h3 {
+    font-size: 25px;
+    margin-bottom: 15px;
+}
+
+.game-card p {
+    color: #bbbbbb;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.about,
+.contact {
+    padding: 80px 15%;
+    text-align: center;
+    background: #101020;
+}
+
+.about p,
+.contact p {
+    color: #cccccc;
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+.contact {
+    background: #080812;
+}
+
+.contact button {
+    margin-top: 25px;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    background: #050509;
+    color: #888888;
+}
+
+@media (max-width: 700px) {
+
+    nav {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .nav-links {
+        gap: 12px;
+    }
+
+    .hero h1 {
+        font-size: 50px;
+    }
 }
