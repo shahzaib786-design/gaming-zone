@@ -1,80 +1,49 @@
 let currentGame = "";
 let gameRunning = false;
-
 let score = 0;
 let lives = 3;
-
-let gameLoop;
+let gameLoop = null;
 let keys = {};
 
 const gameScreen = document.getElementById("game-screen");
 const gameArea = document.getElementById("game-area");
 
-document.addEventListener("keydown", function (e) {
+document.addEventListener("keydown", e => {
     keys[e.key.toLowerCase()] = true;
 
-    if (
-        e.key === "ArrowLeft" ||
-        e.key === "ArrowRight" ||
-        e.key === " "
-    ) {
+    if (e.key === " " || e.key === "ArrowLeft" || e.key === "ArrowRight") {
         e.preventDefault();
     }
 });
 
-document.addEventListener("keyup", function (e) {
+document.addEventListener("keyup", e => {
     keys[e.key.toLowerCase()] = false;
 });
 
-
-/* =========================
-   WEBSITE
-========================= */
-
 function goToGames() {
-
     document.getElementById("games").scrollIntoView({
         behavior: "smooth"
     });
-
 }
 
-
 function openGame(game) {
-
     currentGame = game;
-
     gameScreen.classList.add("active");
 
-    if (game === "battle") {
+    const titles = {
+        battle: "🎯 BATTLE ARENA",
+        racing: "🏎️ SPEED RACING",
+        war: "⚔️ WAR LEGENDS"
+    };
 
-        document.getElementById("game-title").textContent =
-            "🎯 BATTLE ARENA";
+    const instructions = {
+        battle: "Move the mouse to aim. Click to shoot the target.",
+        racing: "Use A/D or ←/→ to move. Avoid cars and rocks.",
+        war: "Move with A/D or ←/→. Move mouse to aim and click to shoot."
+    };
 
-        document.getElementById("game-instructions").textContent =
-            "Click the targets. Misses cost a life. No timer.";
-
-    }
-
-    if (game === "racing") {
-
-        document.getElementById("game-title").textContent =
-            "🏎️ SPEED RACING";
-
-        document.getElementById("game-instructions").textContent =
-            "Use A/D or ←/→ to move your car and avoid enemy cars.";
-
-    }
-
-    if (game === "war") {
-
-        document.getElementById("game-title").textContent =
-            "⚔️ WAR LEGENDS";
-
-        document.getElementById("game-instructions").textContent =
-            "Move with A/D or ←/→ and press SPACE to attack.";
-
-    }
+    document.getElementById("game-title").textContent = titles[game];
+    document.getElementById("game-instructions").textContent = instructions[game];
 
     gameScreen.scrollIntoView({
         behavior: "smooth"
@@ -83,473 +52,409 @@ function openGame(game) {
     startGame();
 }
 
-
 function closeGame() {
-
-    gameRunning = false;
-
-    clearInterval(gameLoop);
+    stopGame();
 
     gameArea.innerHTML = `
         <div id="game-message">
-            🎮 Choose a game and press
-            <strong>START GAME</strong>
+            🎮 Choose a game and press START GAME
         </div>
     `;
 
     gameScreen.classList.remove("active");
-
 }
 
-
 function startGame() {
-
-    clearInterval(gameLoop);
+    stopGame();
 
     gameRunning = true;
-
     score = 0;
     lives = 3;
 
     updateStats();
-
     gameArea.innerHTML = "";
 
-    if (currentGame === "battle") {
-        startBattle();
-    }
-
-    if (currentGame === "racing") {
-        startRacing();
-    }
-
-    if (currentGame === "war") {
-        startWar();
-    }
-
+    if (currentGame === "battle") startBattle();
+    if (currentGame === "racing") startRacing();
+    if (currentGame === "war") startWar();
 }
-
 
 function restartGame() {
-
     startGame();
-
 }
 
+function stopGame() {
+    gameRunning = false;
 
-function updateStats() {
-
-    document.getElementById("score").textContent = score;
-
-    document.getElementById("lives").textContent = lives;
-
-}
-
-
-/* =========================
-   BATTLE ARENA
-========================= */
-
-let battleTarget;
-let battleMisses = 0;
-
-
-function startBattle() {
-
-    gameArea.innerHTML = "";
-
-    createBattleTarget();
-
-    battleMisses = 0;
-
-}
-
-
-function createBattleTarget() {
-
-    if (!gameRunning) return;
-
-    if (battleTarget) {
-        battleTarget.remove();
+    if (gameLoop) {
+        clearInterval(gameLoop);
+        gameLoop = null;
     }
 
-    battleTarget = document.createElement("div");
+    gameArea.onmousemove = null;
+    gameArea.onclick = null;
+}
 
-    battleTarget.className = "target";
+function updateStats() {
+    document.getElementById("score").textContent = score;
+    document.getElementById("lives").textContent = lives;
+}
 
-    const maxX = gameArea.clientWidth - 65;
-    const maxY = gameArea.clientHeight - 65;
+/* =================================
+   BATTLE ARENA
+================================= */
+
+let battleTarget;
+
+function startBattle() {
+    gameArea.innerHTML = `
+        <div class="battle-arena">
+            <div class="aim"></div>
+
+            <div class="gun">
+                🔫
+            </div>
+
+            <div class="target">
+                🎯
+            </div>
+        </div>
+    `;
+
+    battleTarget = gameArea.querySelector(".target");
+
+    moveBattleTarget();
+
+    gameArea.onmousemove = e => {
+        const rect = gameArea.getBoundingClientRect();
+
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const aim = gameArea.querySelector(".aim");
+        const gun = gameArea.querySelector(".gun");
+
+        aim.style.left = x + "px";
+        aim.style.top = y + "px";
+
+        const gunX = 65;
+        const gunY = gameArea.clientHeight - 45;
+
+        const angle =
+            Math.atan2(y - gunY, x - gunX) * 180 / Math.PI;
+
+        gun.style.transform = `rotate(${angle}deg)`;
+    };
+
+    gameArea.onclick = e => {
+        if (!gameRunning) return;
+
+        if (e.target === battleTarget) {
+            score += 10;
+            updateStats();
+
+            battleTarget.style.transform = "scale(1.4)";
+
+            setTimeout(() => {
+                if (gameRunning) {
+                    battleTarget.style.transform = "scale(1)";
+                    moveBattleTarget();
+                }
+            }, 120);
+
+        } else if (
+            !e.target.classList.contains("aim") &&
+            !e.target.classList.contains("gun")
+        ) {
+            lives--;
+            updateStats();
+
+            if (lives <= 0) {
+                gameOver();
+            }
+        }
+    };
+}
+
+function moveBattleTarget() {
+    if (!battleTarget) return;
+
+    const maxX = Math.max(
+        10,
+        gameArea.clientWidth - 80
+    );
+
+    const maxY = Math.max(
+        80,
+        gameArea.clientHeight - 130
+    );
 
     battleTarget.style.left =
         Math.random() * maxX + "px";
 
     battleTarget.style.top =
-        Math.random() * maxY + "px";
-
-
-    battleTarget.onclick = function (event) {
-
-        event.stopPropagation();
-
-        score++;
-
-        updateStats();
-
-        createBattleTarget();
-
-    };
-
-
-    gameArea.appendChild(battleTarget);
-
+        40 + Math.random() * maxY + "px";
 }
 
-
-/* Clicking empty space = miss */
-
-gameArea.addEventListener("click", function (event) {
-
-    if (!gameRunning) return;
-
-    if (currentGame !== "battle") return;
-
-    if (event.target === gameArea) {
-
-        lives--;
-
-        updateStats();
-
-        if (lives <= 0) {
-
-            gameOver();
-
-        }
-
-    }
-
-});
-
-
-/* =========================
+/* =================================
    SPEED RACING
-========================= */
+================================= */
 
 let playerCar;
-let enemyCars = [];
-
-let racingPosition = 0;
-let racingFrames = 0;
-
+let trafficCars = [];
+let racingRocks = [];
 
 function startRacing() {
+    trafficCars = [];
+    racingRocks = [];
 
-    gameArea.innerHTML = "";
+    gameArea.innerHTML = `
+        <div class="race-game">
 
-    enemyCars = [];
+            <div class="road">
+                <div class="road-mark mark1"></div>
+                <div class="road-mark mark2"></div>
+                <div class="road-mark mark3"></div>
+            </div>
 
-    racingPosition = 0;
+            <div class="player-car">
+                🏎️
+            </div>
 
-    racingFrames = 0;
+        </div>
+    `;
 
+    playerCar =
+        gameArea.querySelector(".player-car");
 
-    const road = document.createElement("div");
+    playerCar.style.left = "50%";
 
-    road.className = "road";
-
-    gameArea.appendChild(road);
-
-
-    playerCar = document.createElement("div");
-
-    playerCar.className = "player-car";
-
-    playerCar.style.left = "calc(50% - 22px)";
-
-    playerCar.style.bottom = "25px";
-
-    gameArea.appendChild(playerCar);
-
-
-    gameLoop = setInterval(racingLoop, 30);
-
+    gameLoop =
+        setInterval(racingLoop, 30);
 }
 
-
 function racingLoop() {
-
     if (!gameRunning) return;
 
-
-    racingFrames++;
-
-    /* Player movement */
-
-    let currentLeft =
-        parseFloat(playerCar.style.left);
-
+    let left =
+        parseFloat(playerCar.style.left) || 50;
 
     if (keys["a"] || keys["arrowleft"]) {
-
-        currentLeft -= 7;
-
+        left -= 1.3;
     }
-
 
     if (keys["d"] || keys["arrowright"]) {
-
-        currentLeft += 7;
-
+        left += 1.3;
     }
 
+    left = Math.max(27, Math.min(73, left));
 
-    const roadLeft =
-        gameArea.clientWidth * 0.225;
+    playerCar.style.left = left + "%";
 
-    const roadRight =
-        gameArea.clientWidth * 0.775 - 45;
-
-
-    currentLeft =
-        Math.max(
-            roadLeft,
-            Math.min(roadRight, currentLeft)
-        );
-
-
-    playerCar.style.left =
-        currentLeft + "px";
-
-
-    /* Spawn enemy */
-
-    if (racingFrames % 35 === 0) {
-
-        createEnemyCar();
-
+    if (Math.random() < 0.025) {
+        createTrafficCar();
     }
 
+    if (Math.random() < 0.012) {
+        createRock();
+    }
 
-    /* Move enemies */
+    moveTraffic();
+    moveRocks();
+}
 
-    enemyCars.forEach(function (enemy) {
+function createTrafficCar() {
+    const car = document.createElement("div");
+
+    car.className = "traffic-car";
+    car.textContent =
+        Math.random() > 0.5 ? "🚗" : "🚙";
+
+    car.style.left =
+        (27 + Math.random() * 46) + "%";
+
+    car.style.top = "-70px";
+
+    gameArea.appendChild(car);
+    trafficCars.push(car);
+}
+
+function createRock() {
+    const rock = document.createElement("div");
+
+    rock.className = "rock";
+    rock.textContent = "🪨";
+
+    rock.style.left =
+        (27 + Math.random() * 46) + "%";
+
+    rock.style.top = "-60px";
+
+    gameArea.appendChild(rock);
+    racingRocks.push(rock);
+}
+
+function moveTraffic() {
+    trafficCars.forEach((car, index) => {
 
         let top =
-            parseFloat(enemy.style.top);
+            parseFloat(car.style.top);
 
-        top += 6;
+        top += 5;
 
-        enemy.style.top =
-            top + "px";
+        car.style.top = top + "px";
 
+        if (checkCollision(playerCar, car)) {
 
-        /* Collision */
-
-        if (checkCollision(playerCar, enemy)) {
-
-            enemy.remove();
-
-            enemyCars =
-                enemyCars.filter(e => e !== enemy);
+            car.remove();
+            trafficCars.splice(index, 1);
 
             lives--;
-
             updateStats();
 
             if (lives <= 0) {
-
                 gameOver();
-
             }
 
+            return;
         }
-
-
-        /* Passed enemy */
 
         if (top > gameArea.clientHeight) {
 
-            enemy.remove();
+            car.remove();
+            trafficCars.splice(index, 1);
 
-            enemyCars =
-                enemyCars.filter(e => e !== enemy);
+            score += 5;
+            updateStats();
+        }
+    });
+}
 
-            score++;
+function moveRocks() {
+    racingRocks.forEach((rock, index) => {
 
+        let top =
+            parseFloat(rock.style.top);
+
+        top += 6;
+
+        rock.style.top = top + "px";
+
+        if (checkCollision(playerCar, rock)) {
+
+            rock.remove();
+            racingRocks.splice(index, 1);
+
+            lives--;
             updateStats();
 
+            if (lives <= 0) {
+                gameOver();
+            }
+
+            return;
         }
 
+        if (top > gameArea.clientHeight) {
+
+            rock.remove();
+            racingRocks.splice(index, 1);
+
+            score += 3;
+            updateStats();
+        }
     });
-
 }
 
-
-function createEnemyCar() {
-
-    const enemy =
-        document.createElement("div");
-
-    enemy.className = "enemy-car";
-
-    const roadLeft =
-        gameArea.clientWidth * 0.225;
-
-    const roadWidth =
-        gameArea.clientWidth * 0.55;
-
-
-    enemy.style.left =
-        roadLeft +
-        Math.random() *
-        (roadWidth - 45) +
-        "px";
-
-
-    enemy.style.top = "-80px";
-
-
-    gameArea.appendChild(enemy);
-
-    enemyCars.push(enemy);
-
-}
-
-
-function checkCollision(a, b) {
-
-    const aRect =
-        a.getBoundingClientRect();
-
-    const bRect =
-        b.getBoundingClientRect();
-
-
-    return !(
-        aRect.right < bRect.left ||
-        aRect.left > bRect.right ||
-        aRect.bottom < bRect.top ||
-        aRect.top > bRect.bottom
-    );
-
-}
-
-
-/* =========================
+/* =================================
    WAR LEGENDS
-========================= */
+================================= */
 
-let player;
-let enemies = [];
-let bullets = [];
-
-let warFrame = 0;
-
+let warPlayer;
+let warEnemies = [];
+let warBullets = [];
 
 function startWar() {
+    warEnemies = [];
+    warBullets = [];
 
-    gameArea.innerHTML = "";
+    gameArea.innerHTML = `
+        <div class="war-game">
 
-    enemies = [];
+            <div class="war-player">
+                🪖
+            </div>
 
-    bullets = [];
+            <div class="war-gun">
+                🔫
+            </div>
 
-    warFrame = 0;
+            <div class="war-crosshair"></div>
 
+        </div>
+    `;
 
-    player =
-        document.createElement("div");
+    warPlayer =
+        gameArea.querySelector(".war-player");
 
-    player.className = "player";
+    warPlayer.style.left = "50%";
 
-    player.style.left =
-        "calc(50% - 20px)";
+    gameArea.onmousemove = e => {
 
-    player.style.bottom =
-        "20px";
+        const rect =
+            gameArea.getBoundingClientRect();
 
+        const x =
+            e.clientX - rect.left;
 
-    gameArea.appendChild(player);
+        const y =
+            e.clientY - rect.top;
 
+        const crosshair =
+            gameArea.querySelector(".war-crosshair");
+
+        crosshair.style.left = x + "px";
+        crosshair.style.top = y + "px";
+
+        const px =
+            warPlayer.offsetLeft + 25;
+
+        const py =
+            warPlayer.offsetTop + 25;
+
+        const angle =
+            Math.atan2(y - py, x - px);
+
+        const gun =
+            gameArea.querySelector(".war-gun");
+
+        gun.style.left =
+            (warPlayer.offsetLeft + 20) + "px";
+
+        gun.style.top =
+            (warPlayer.offsetTop - 5) + "px";
+
+        gun.style.transform =
+            `rotate(${angle}rad)`;
+    };
+
+    gameArea.onclick = e => {
+
+        if (!gameRunning) return;
+
+        if (
+            e.target.classList.contains("war-crosshair") ||
+            e.target.closest(".war-game")
+        ) {
+            shootWar();
+        }
+    };
 
     gameLoop =
         setInterval(warLoop, 30);
-
 }
 
-
-function warLoop() {
-
-    if (!gameRunning) return;
-
-
-    warFrame++;
-
-
-    /* Player movement */
-
-    let left =
-        parseFloat(player.style.left);
-
-
-    if (keys["a"] || keys["arrowleft"]) {
-
-        left -= 6;
-
-    }
-
-
-    if (keys["d"] || keys["arrowright"]) {
-
-        left += 6;
-
-    }
-
-
-    left =
-        Math.max(
-            0,
-            Math.min(
-                gameArea.clientWidth - 40,
-                left
-            )
-        );
-
-
-    player.style.left =
-        left + "px";
-
-
-    /* Attack */
-
-    if (
-        keys[" "] &&
-        warFrame % 10 === 0
-    ) {
-
-        createBullet();
-
-    }
-
-
-    /* Spawn enemies */
-
-    if (warFrame % 35 === 0) {
-
-        createEnemy();
-
-    }
-
-
-    moveBullets();
-
-    moveEnemies();
-
-    checkWarCollisions();
-
-}
-
-
-function createBullet() {
+function shootWar() {
 
     const bullet =
         document.createElement("div");
@@ -557,82 +462,98 @@ function createBullet() {
     bullet.className = "bullet";
 
     bullet.style.left =
-        (
-            parseFloat(player.style.left) +
-            17
-        ) + "px";
-
+        (warPlayer.offsetLeft + 25) + "px";
 
     bullet.style.top =
-        (
-            parseFloat(player.style.top) ||
-            gameArea.clientHeight - 60
-        ) + "px";
-
+        (warPlayer.offsetTop - 10) + "px";
 
     gameArea.appendChild(bullet);
 
-    bullets.push(bullet);
-
+    warBullets.push(bullet);
 }
 
+function warLoop() {
+    if (!gameRunning) return;
 
-function moveBullets() {
+    let left =
+        parseFloat(warPlayer.style.left) || 50;
 
-    bullets.forEach(function (bullet) {
+    if (keys["a"] || keys["arrowleft"]) {
+        left -= 1;
+    }
 
-        let top =
-            parseFloat(bullet.style.top);
+    if (keys["d"] || keys["arrowright"]) {
+        left += 1;
+    }
 
-        top -= 9;
+    left = Math.max(5, Math.min(90, left));
 
-        bullet.style.top =
-            top + "px";
+    warPlayer.style.left = left + "%";
 
+    if (Math.random() < 0.025) {
+        createWarEnemy();
+    }
 
-        if (top < -20) {
-
-            bullet.remove();
-
-            bullets =
-                bullets.filter(
-                    b => b !== bullet
-                );
-
-        }
-
-    });
-
+    moveWarBullets();
+    moveWarEnemies();
 }
 
-
-function createEnemy() {
+function createWarEnemy() {
 
     const enemy =
         document.createElement("div");
 
-    enemy.className = "enemy";
+    enemy.className = "war-enemy";
+    enemy.textContent = "👾";
 
     enemy.style.left =
-        Math.random() *
-        (gameArea.clientWidth - 40) +
-        "px";
+        (5 + Math.random() * 85) + "%";
 
-
-    enemy.style.top =
-        "-50px";
-
+    enemy.style.top = "-60px";
 
     gameArea.appendChild(enemy);
 
-    enemies.push(enemy);
-
+    warEnemies.push(enemy);
 }
 
+function moveWarBullets() {
 
-function moveEnemies() {
+    warBullets.forEach((bullet, bi) => {
 
-    enemies.forEach(function (enemy) {
+        let top =
+            parseFloat(bullet.style.top);
+
+        top -= 10;
+
+        bullet.style.top =
+            top + "px";
+
+        warEnemies.forEach((enemy, ei) => {
+
+            if (checkCollision(bullet, enemy)) {
+
+                bullet.remove();
+                enemy.remove();
+
+                warBullets.splice(bi, 1);
+                warEnemies.splice(ei, 1);
+
+                score += 10;
+                updateStats();
+            }
+        });
+
+        if (top < -30) {
+
+            bullet.remove();
+            warBullets.splice(bi, 1);
+        }
+    });
+}
+
+function moveWarEnemies() {
+
+    warEnemies.forEach((enemy, index) => {
 
         let top =
             parseFloat(enemy.style.top);
@@ -642,114 +563,61 @@ function moveEnemies() {
         enemy.style.top =
             top + "px";
 
-
-        if (top >
-            gameArea.clientHeight) {
+        if (checkCollision(warPlayer, enemy)) {
 
             enemy.remove();
-
-            enemies =
-                enemies.filter(
-                    e => e !== enemy
-                );
+            warEnemies.splice(index, 1);
 
             lives--;
-
             updateStats();
 
-
             if (lives <= 0) {
-
                 gameOver();
-
             }
 
+            return;
         }
 
-    });
-
-}
-
-
-function checkWarCollisions() {
-
-    bullets.forEach(function (bullet) {
-
-        enemies.forEach(function (enemy) {
-
-            if (
-                checkCollision(
-                    bullet,
-                    enemy
-                )
-            ) {
-
-                bullet.remove();
-
-                enemy.remove();
-
-
-                bullets =
-                    bullets.filter(
-                        b => b !== bullet
-                    );
-
-
-                enemies =
-                    enemies.filter(
-                        e => e !== enemy
-                    );
-
-
-                score += 10;
-
-                updateStats();
-
-            }
-
-        });
-
-    });
-
-
-    enemies.forEach(function (enemy) {
-
-        if (
-            checkCollision(
-                player,
-                enemy
-            )
-        ) {
+        if (top > gameArea.clientHeight) {
 
             enemy.remove();
-
-            enemies =
-                enemies.filter(
-                    e => e !== enemy
-                );
-
+            warEnemies.splice(index, 1);
 
             lives--;
-
             updateStats();
 
-
             if (lives <= 0) {
-
                 gameOver();
-
             }
-
         }
-
     });
-
 }
 
+/* =================================
+   COLLISION
+================================= */
 
-/* =========================
+function checkCollision(a, b) {
+
+    if (!a || !b) return false;
+
+    const r1 =
+        a.getBoundingClientRect();
+
+    const r2 =
+        b.getBoundingClientRect();
+
+    return !(
+        r1.right < r2.left ||
+        r1.left > r2.right ||
+        r1.bottom < r2.top ||
+        r1.top > r2.bottom
+    );
+}
+
+/* =================================
    GAME OVER
-========================= */
+================================= */
 
 function gameOver() {
 
@@ -757,16 +625,14 @@ function gameOver() {
 
     clearInterval(gameLoop);
 
+    gameLoop = null;
 
     gameArea.innerHTML = `
-
         <div id="game-message">
 
             <h2 style="color:#00ffcc;">
                 🎮 GAME OVER
             </h2>
-
-            <br>
 
             <p>
                 🏆 Final Score:
@@ -780,20 +646,15 @@ function gameOver() {
             </button>
 
         </div>
-
     `;
-
 }
 
-
-/* =========================
+/* =================================
    CONTACT
-========================= */
+================================= */
 
 function contactUs() {
 
-    alert(
-        "🎮 Thanks for visiting Shahzaib Gaming!"
-    );
-
+    window.location.href =
+        "mailto:hjjbnjhgghh@gmail.com";
 }
