@@ -1,157 +1,605 @@
-let score = 0;
-let lives = 3;
-let gameRunning = false;
-let targetInterval;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+html {
+    scroll-behavior: smooth;
+}
 
-function startGaming() {
-
-    document.getElementById("games").scrollIntoView({
-        behavior: "smooth"
-    });
-
+body {
+    font-family: Arial, sans-serif;
+    background: #050509;
+    color: white;
 }
 
 
-function openBattleArena() {
+/* =========================
+   NAVIGATION
+========================= */
 
-    document.getElementById("battleArena").scrollIntoView({
-        behavior: "smooth"
-    });
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 20px 8%;
+    background: rgba(10, 10, 20, 0.95);
+    backdrop-filter: blur(10px);
+}
 
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav h2 {
+    color: #00ffcc;
+    letter-spacing: 2px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: #00ffcc;
 }
 
 
-function startBattleGame() {
+/* =========================
+   HERO
+========================= */
 
-    score = 0;
-    lives = 3;
-    gameRunning = true;
+.hero {
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    padding: 80px 10%;
 
-    document.getElementById("score").textContent = score;
-    document.getElementById("lives").textContent = lives;
+    background:
+        radial-gradient(
+            circle at 75% 40%,
+            #16404a,
+            #0a0a18 45%,
+            #050509 75%
+        );
+}
 
-    const gameArea = document.getElementById("gameArea");
+.hero-content {
+    max-width: 750px;
+}
 
-    gameArea.innerHTML = "";
+.small-title {
+    color: #00ffcc;
+    font-weight: bold;
+    letter-spacing: 6px;
+}
 
-    createTarget();
+.hero h1 {
+    font-size: clamp(55px, 9vw, 105px);
+    line-height: 0.95;
+    margin: 20px 0;
+}
 
-    clearInterval(targetInterval);
+.hero h1 span {
+    color: #00ffcc;
+    text-shadow: 0 0 25px #00ffcc;
+}
 
-    targetInterval = setInterval(() => {
-
-        if (gameRunning) {
-            createTarget();
-        }
-
-    }, 1200);
-
+.hero p {
+    color: #cccccc;
+    font-size: 19px;
+    margin-bottom: 30px;
 }
 
 
-function createTarget() {
+/* =========================
+   BUTTONS
+========================= */
 
-    if (!gameRunning) return;
+button {
+    background: #00ffcc;
+    color: #050509;
 
-    const gameArea = document.getElementById("gameArea");
+    border: none;
+    border-radius: 6px;
 
-    const target = document.createElement("div");
+    padding: 14px 25px;
 
-    target.classList.add("target");
+    font-weight: bold;
+    cursor: pointer;
 
-    const maxX = gameArea.clientWidth - 60;
-    const maxY = gameArea.clientHeight - 60;
+    transition: 0.25s;
+}
 
-    target.style.left =
-        Math.random() * maxX + "px";
-
-    target.style.top =
-        Math.random() * maxY + "px";
-
-
-    target.onclick = function(event) {
-
-        event.stopPropagation();
-
-        score++;
-
-        document.getElementById("score").textContent = score;
-
-        target.remove();
-
-    };
-
-
-    gameArea.appendChild(target);
-
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px #00ffcc;
 }
 
 
-document.getElementById("gameArea").onclick = function() {
+/* =========================
+   GAMES
+========================= */
 
-    if (!gameRunning) return;
+.games {
+    padding: 90px 8%;
+    text-align: center;
+    background: #080812;
+}
 
-    lives--;
+.games h2 {
+    font-size: 38px;
+    margin-bottom: 45px;
+}
 
-    document.getElementById("lives").textContent = lives;
+.game-container {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
 
-    if (lives <= 0) {
+.game-card {
+    width: 300px;
 
-        gameOver();
+    padding: 30px;
 
+    background:
+        linear-gradient(
+            145deg,
+            #161626,
+            #0d0d17
+        );
+
+    border: 1px solid #29293c;
+    border-radius: 15px;
+
+    transition: 0.3s;
+}
+
+.game-card:hover {
+    transform: translateY(-10px);
+
+    border-color: #00ffcc;
+
+    box-shadow:
+        0 0 30px rgba(0, 255, 204, 0.2);
+}
+
+.game-icon {
+    font-size: 60px;
+    margin-bottom: 20px;
+}
+
+.game-card h3 {
+    font-size: 25px;
+    margin-bottom: 15px;
+}
+
+.game-card p {
+    color: #bbbbbb;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+
+/* =========================
+   GAME SCREEN
+========================= */
+
+.game-screen {
+    display: none;
+
+    min-height: 700px;
+
+    padding: 80px 5%;
+
+    text-align: center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #101c25,
+            #06060d 70%
+        );
+}
+
+.game-screen.active {
+    display: block;
+}
+
+.game-header {
+    max-width: 900px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+}
+
+.game-header h2 {
+    color: #00ffcc;
+
+    font-size: 36px;
+}
+
+.back-button {
+    background: #202033;
+    color: white;
+}
+
+#game-instructions {
+    color: #bbbbbb;
+    margin-bottom: 20px;
+}
+
+
+/* =========================
+   GAME STATS
+========================= */
+
+.game-stats {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 50px;
+
+    margin-bottom: 20px;
+
+    font-size: 20px;
+}
+
+.game-stats span {
+    color: #00ffcc;
+    font-weight: bold;
+}
+
+
+/* =========================
+   GAME AREA
+========================= */
+
+#game-area {
+    position: relative;
+
+    width: 100%;
+    max-width: 900px;
+
+    height: 500px;
+
+    margin: 0 auto 25px;
+
+    overflow: hidden;
+
+    border: 2px solid #00ffcc;
+
+    border-radius: 15px;
+
+    background:
+        radial-gradient(
+            circle,
+            #162b34 1px,
+            transparent 1px
+        );
+
+    background-size: 30px 30px;
+
+    box-shadow:
+        0 0 30px rgba(0, 255, 204, 0.12);
+}
+
+#game-message {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    color: #aaaaaa;
+
+    font-size: 22px;
+
+    width: 90%;
+}
+
+
+/* =========================
+   GAME CONTROLS
+========================= */
+
+.game-controls {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+.controls-info {
+    color: #777777;
+
+    font-size: 14px;
+
+    line-height: 1.8;
+}
+
+
+/* =========================
+   BATTLE TARGET
+========================= */
+
+.target {
+    position: absolute;
+
+    width: 60px;
+    height: 60px;
+
+    border-radius: 50%;
+
+    background: #00ffcc;
+
+    border: 5px solid #11111b;
+
+    box-shadow:
+        0 0 25px #00ffcc;
+
+    cursor: crosshair;
+
+    animation: targetAppear 0.2s ease;
+}
+
+.target::after {
+    content: "";
+
+    position: absolute;
+
+    width: 18px;
+    height: 18px;
+
+    background: #11111b;
+
+    border-radius: 50%;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+}
+
+@keyframes targetAppear {
+
+    from {
+        transform: scale(0);
     }
 
-};
-
-
-function gameOver() {
-
-    gameRunning = false;
-
-    clearInterval(targetInterval);
-
-    const gameArea = document.getElementById("gameArea");
-
-    gameArea.innerHTML = `
-        <div id="gameMessage">
-            🎮 GAME OVER<br><br>
-            🏆 Your Score: ${score}
-        </div>
-    `;
+    to {
+        transform: scale(1);
+    }
 
 }
 
 
-function restartBattleGame() {
+/* =========================
+   RACING GAME
+========================= */
 
-    clearInterval(targetInterval);
+.road {
+    position: absolute;
 
-    score = 0;
-    lives = 3;
-    gameRunning = false;
+    width: 55%;
 
-    document.getElementById("score").textContent = score;
-    document.getElementById("lives").textContent = lives;
+    height: 100%;
 
-    document.getElementById("gameArea").innerHTML = `
-        <div id="gameMessage">
-            Click START GAME to begin
-        </div>
-    `;
+    left: 22.5%;
 
+    background: #202025;
+
+    border-left: 5px solid white;
+    border-right: 5px solid white;
+}
+
+.player-car,
+.enemy-car {
+    position: absolute;
+
+    width: 45px;
+    height: 70px;
+
+    border-radius: 8px;
+}
+
+.player-car {
+    background: #00ffcc;
+
+    box-shadow:
+        0 0 20px #00ffcc;
+}
+
+.enemy-car {
+    background: #ff3b6b;
+
+    box-shadow:
+        0 0 20px #ff3b6b;
 }
 
 
-function comingSoon(gameName) {
+/* =========================
+   WAR GAME
+========================= */
 
-    alert("🎮 " + gameName + " is coming soon!");
+.player {
+    position: absolute;
 
+    width: 40px;
+    height: 40px;
+
+    background: #00ffcc;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 0 20px #00ffcc;
+}
+
+.enemy {
+    position: absolute;
+
+    width: 38px;
+    height: 38px;
+
+    background: #ff3b6b;
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 15px #ff3b6b;
+}
+
+.bullet {
+    position: absolute;
+
+    width: 6px;
+    height: 15px;
+
+    background: #ffe066;
+
+    border-radius: 5px;
+
+    box-shadow:
+        0 0 10px #ffe066;
 }
 
 
-function contactUs() {
+/* =========================
+   ABOUT
+========================= */
 
-    alert("📩 Thanks for contacting Shahzaib Gaming!");
+.about {
+    padding: 90px 15%;
+
+    text-align: center;
+
+    background: #101020;
+}
+
+.about h2 {
+    font-size: 38px;
+    margin-bottom: 35px;
+}
+
+.about p {
+    color: #cccccc;
+
+    font-size: 18px;
+
+    line-height: 1.8;
+}
+
+
+/* =========================
+   CONTACT
+========================= */
+
+.contact {
+    padding: 90px 15%;
+
+    text-align: center;
+
+    background: #050509;
+}
+
+.contact h2 {
+    font-size: 38px;
+    margin-bottom: 25px;
+}
+
+.contact p {
+    color: #bbbbbb;
+
+    font-size: 18px;
+
+    margin-bottom: 25px;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+    padding: 25px;
+
+    text-align: center;
+
+    color: #777777;
+
+    background: #020204;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+    nav {
+        flex-direction: column;
+
+        gap: 15px;
+    }
+
+    .nav-links {
+        gap: 12px;
+
+        font-size: 14px;
+    }
+
+    .hero {
+        min-height: 80vh;
+
+        padding: 70px 7%;
+    }
+
+    .hero h1 {
+        font-size: 55px;
+    }
+
+    .game-header {
+        flex-direction: column;
+    }
+
+    .game-stats {
+        gap: 20px;
+
+        font-size: 16px;
+    }
+
+    #game-area {
+        height: 400px;
+    }
+
+    .game-controls {
+        flex-wrap: wrap;
+    }
 
 }

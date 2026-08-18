@@ -25,6 +25,8 @@
 </header>
 
 
+<!-- HOME -->
+
 <section id="home" class="hero">
 
     <div class="hero-content">
@@ -41,7 +43,7 @@
             Enter the world of gaming, challenges and epic adventures.
         </p>
 
-        <button onclick="startGaming()">
+        <button onclick="goToGames()">
             START GAMING
         </button>
 
@@ -50,11 +52,16 @@
 </section>
 
 
+<!-- GAMES -->
+
 <section id="games" class="games">
 
     <h2>🔥 FEATURED GAMES</h2>
 
     <div class="game-container">
+
+
+        <!-- BATTLE ARENA -->
 
         <div class="game-card">
 
@@ -66,12 +73,14 @@
                 Shoot the targets and get the highest score.
             </p>
 
-            <button onclick="openBattleArena()">
+            <button onclick="openGame('battle')">
                 PLAY NOW
             </button>
 
         </div>
 
+
+        <!-- SPEED RACING -->
 
         <div class="game-card">
 
@@ -80,15 +89,17 @@
             <h3>Speed Racing</h3>
 
             <p>
-                Race against your rivals and reach the finish line.
+                Dodge enemy cars and survive the road.
             </p>
 
-            <button onclick="comingSoon('Speed Racing')">
+            <button onclick="openGame('racing')">
                 PLAY NOW
             </button>
 
         </div>
 
+
+        <!-- WAR LEGENDS -->
 
         <div class="game-card">
 
@@ -97,10 +108,10 @@
             <h3>War Legends</h3>
 
             <p>
-                Enter an epic battle and prove your skills.
+                Fight enemies and defend yourself.
             </p>
 
-            <button onclick="comingSoon('War Legends')">
+            <button onclick="openGame('war')">
                 PLAY NOW
             </button>
 
@@ -111,51 +122,109 @@
 </section>
 
 
-<!-- BATTLE ARENA -->
+<!-- GAME SCREEN -->
 
-<section id="battleArena" class="battle-section">
+<section id="game-screen" class="game-screen">
 
-    <h2>🎯 BATTLE ARENA</h2>
+    <div class="game-header">
 
-    <div class="game-info">
+        <h2 id="game-title">
+            🎮 GAME
+        </h2>
 
-        <span>🏆 Score: <b id="score">0</b></span>
-
-        <span>❤️ Lives: <b id="lives">3</b></span>
+        <button
+            class="back-button"
+            onclick="closeGame()">
+            ← BACK TO GAMES
+        </button>
 
     </div>
 
-    <div id="gameArea">
 
-        <div id="gameMessage">
-            Click START GAME to begin
+    <p id="game-instructions">
+        Choose a game to start.
+    </p>
+
+
+    <!-- SCORE -->
+
+    <div class="game-stats">
+
+        <div>
+            🏆 SCORE:
+            <span id="score">0</span>
+        </div>
+
+        <div>
+            ❤️ LIVES:
+            <span id="lives">3</span>
         </div>
 
     </div>
 
-    <button onclick="startBattleGame()">
-        START GAME
-    </button>
 
-    <button onclick="restartBattleGame()">
-        🔄 RESTART
-    </button>
+    <!-- GAME AREA -->
+
+    <div id="game-area">
+
+        <div id="game-message">
+
+            🎮 Choose a game and press
+            <strong>START GAME</strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- CONTROLS -->
+
+    <div class="game-controls">
+
+        <button onclick="startGame()">
+            🎮 START GAME
+        </button>
+
+        <button onclick="restartGame()">
+            🔄 RESTART
+        </button>
+
+    </div>
+
+
+    <p class="controls-info">
+
+        🎯 Battle Arena: Mouse / Click<br>
+
+        🏎️ Speed Racing: A/D or ←/→<br>
+
+        ⚔️ War Legends: A/D or ←/→ + SPACE
+
+    </p>
 
 </section>
 
+
+<!-- ABOUT -->
 
 <section id="about" class="about">
 
     <h2>🎮 ABOUT US</h2>
 
     <p>
+
         Welcome to Shahzaib Gaming!
+
         This is a gaming community for players
-        who love action, competition and adventure.
+        who love action, competition, racing
+        and adventure.
+
     </p>
 
 </section>
 
+
+<!-- CONTACT -->
 
 <section id="contact" class="contact">
 
@@ -172,10 +241,13 @@
 </section>
 
 
+<!-- FOOTER -->
+
 <footer>
 
     <p>
-        © 2026 Shahzaib Gaming | All Rights Reserved
+        © 2026 Shahzaib Gaming |
+        All Rights Reserved
     </p>
 
 </footer>
@@ -184,4 +256,5 @@
 <script src="script.js"></script>
 
 </body>
+
 </html>
